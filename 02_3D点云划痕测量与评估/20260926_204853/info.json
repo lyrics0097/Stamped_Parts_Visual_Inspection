@@ -1,0 +1,78 @@
+{
+  "run_id": "20260926_204853",
+  "timestamp": "2026-09-26T20:48:58",
+  "trigger": "auto",
+  "camera": "Intel RealSense D455",
+  "image_size": {
+    "width": 1280,
+    "height": 720
+  },
+  "intrinsics_color": {
+    "fx": 643.950927734375,
+    "fy": 642.320068359375,
+    "ppx": 653.594970703125,
+    "ppy": 369.0254821777344,
+    "model": "distortion.inverse_brown_conrady",
+    "coeffs": [
+      -0.05559372901916504,
+      0.06617249548435211,
+      -0.00010359872976550832,
+      0.00014389304851647466,
+      -0.021359236910939217
+    ]
+  },
+  "depth_scale_m_per_unit": 0.0010000000474974513,
+  "object_plane_depth_m": 1.334,
+  "depth_source": "object_surface",
+  "depth_valid_pixels": 19233,
+  "mm_per_pixel": 2.07159,
+  "formula": "size_mm = pixel_length * Z_m / fx * 1000  (equivalently pixel_length * mm_per_pixel)",
+  "sam_weight": "C:\\Users\\lyz\\Desktop\\sam3\\sam_b.pt",
+  "sam_box_prompt_xyxy": [
+    519,
+    0,
+    1280,
+    607
+  ],
+  "sam_score": 0.5903,
+  "foreground_bbox_xyxy": [
+    527,
+    0,
+    1280,
+    599
+  ],
+  "mask_area_px": 24384,
+  "crop_bbox_in_full_image_xyxy": [
+    1071,
+    0,
+    1280,
+    231
+  ],
+  "min_area_rect": {
+    "center_xy": [
+      1187.6,
+      102.6
+    ],
+    "long_side_px": 217.6,
+    "short_side_px": 193.1,
+    "angle_deg": -84.2
+  },
+  "object_size_mm": {
+    "long_side": 450.7,
+    "short_side": 400.1
+  },
+  "files": {
+    "color": "color.png",
+    "depth_m_npy": "depth_m.npy",
+    "depth_vis": "depth_vis.png",
+    "foreground": "foreground.png",
+    "mask": "mask.png",
+    "crop": "crop.jpg",
+    "overlay": "overlay.jpg"
+  },
+  "notes": [
+    "mask.png / foreground.png 与 color.png 同尺寸, 255 = 工件",
+    "crop.jpg 与原图 1:1 像素, 左上角在原图中的位置见 crop_bbox_in_full_image_xyxy",
+    "划痕宽度(mm) = 划痕像素宽度 * mm_per_pixel (假设工件平面与相机成像面平行)"
+  ]
+}

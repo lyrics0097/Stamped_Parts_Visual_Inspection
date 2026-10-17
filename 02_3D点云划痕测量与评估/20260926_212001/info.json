@@ -1,0 +1,124 @@
+{
+  "run_id": "20260926_212001",
+  "timestamp": "2026-09-26T21:20:09",
+  "trigger": "auto",
+  "camera": "Intel RealSense D455 (depth aligned to color)",
+  "image_size": {
+    "width": 1280,
+    "height": 720
+  },
+  "intrinsics_color": {
+    "fx": 644.6513671875,
+    "fy": 643.0186767578125,
+    "ppx": 653.594970703125,
+    "ppy": 369.0254821777344,
+    "model": "distortion.inverse_brown_conrady",
+    "coeffs": [
+      -0.05559372901916504,
+      0.06617249548435211,
+      -0.00010359872976550832,
+      0.00014389304851647466,
+      -0.021359236910939217
+    ]
+  },
+  "recognition": {
+    "method": "DINOv3 ViT-B/16 patch similarity + nearest depth",
+    "sim_threshold": 0.722,
+    "candidates": [
+      {
+        "box": [
+          486,
+          180,
+          870,
+          308
+        ],
+        "sim": 0.843,
+        "z_m": 1.161
+      }
+    ],
+    "chosen_box_xyxy": [
+      486,
+      180,
+      870,
+      308
+    ]
+  },
+  "nearest_cluster_depth_m": 0.64,
+  "object_depth_valid_pixels": 3960,
+  "sam_weight": "C:\\Users\\lyz\\Desktop\\sam3\\sam_b.pt",
+  "sam_box_prompt_xyxy": [
+    476,
+    170,
+    880,
+    318
+  ],
+  "sam_score": 0.9813,
+  "mask_area_px": 22778,
+  "crop_bbox_in_full_image_xyxy": [
+    474,
+    188,
+    872,
+    304
+  ],
+  "measurement_3d": {
+    "plane_source": "object_depth_ransac_pca",
+    "plane_fit_rms_mm": 1.9,
+    "plane_fit_quality": {
+      "inlier_ratio": 0.871,
+      "rms_mm": 1.9,
+      "tilt_deg": 41.0,
+      "short_axis_spread_mm": 11.3,
+      "n_points": 881
+    },
+    "plane_normal_camera_frame": [
+      0.1083,
+      0.6477,
+      -0.7541
+    ],
+    "plane_center_camera_frame_m": [
+      0.1314,
+      -0.0904,
+      0.6411
+    ],
+    "tilt_deg": 41.0,
+    "object_plane_depth_m": 0.6411,
+    "mm_per_pixel_frontal": 0.99446,
+    "mm_per_pixel_along_plane_approx": 1.31866,
+    "min_area_rect_px": {
+      "long_side_px": 377.8,
+      "short_side_px": 69.9,
+      "angle_deg": -84.1,
+      "center_xy": [
+        670.6,
+        240.7
+      ]
+    },
+    "size_mm_pinhole_frontal": {
+      "long_side": 375.7,
+      "short_side": 69.5
+    },
+    "size_mm_3d_plane": {
+      "long_side": 361.4,
+      "short_side": 76.3
+    }
+  },
+  "scratch_width_conversion": {
+    "formula": "scratch_width_mm = scratch_width_px * mm_per_pixel",
+    "mm_per_pixel": 0.99446,
+    "note": "若工件倾斜, 沿倾斜方向像素被压缩, 可用 mm_per_pixel_along_plane_approx 或按平面法向逐点修正"
+  },
+  "files": {
+    "color": "color.png",
+    "depth_m_npy": "depth_m.npy",
+    "depth_vis": "depth_vis.png",
+    "similarity": "similarity.jpg",
+    "mask": "mask.png",
+    "crop": "crop.jpg",
+    "overlay": "overlay.jpg"
+  },
+  "notes": [
+    "mask.png 与 color.png 同尺寸, 255 = 工件",
+    "crop.jpg 与原图 1:1 像素, 位置见 crop_bbox_in_full_image_xyxy",
+    "size_mm_3d_plane 为倾斜校正后的尺寸 (推荐); size_mm_pinhole_frontal 为正对假设下的尺寸"
+  ]
+}

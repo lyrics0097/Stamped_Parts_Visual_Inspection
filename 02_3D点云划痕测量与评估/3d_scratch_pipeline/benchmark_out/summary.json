@@ -1,0 +1,38 @@
+{
+  "synthetic": {
+    "n": 8,
+    "mean_iou": 0.8289735961322133,
+    "mean_rel_err_width": 0.14860863095238097,
+    "mean_rel_err_depth": 0.06447916666666664,
+    "mean_rel_err_length": 0.021508496798340538,
+    "detect_rate": 1.0
+  },
+  "imt_albi": {
+    "n": 34,
+    "mean_iou": 0.4721687977484733,
+    "mean_rel_err_width": null,
+    "mean_rel_err_depth": 0.36598306188782104,
+    "mean_rel_err_length": null,
+    "detect_rate": 0.9411764705882353,
+    "mean_rel_err_depth_roi": 0.6154687983171285
+  },
+  "imt_stamping_like_plaque_g2Metric": {
+    "n": 9,
+    "mean_iou": 0.7367700996990546,
+    "mean_rel_err_depth": 0.14793936215738027,
+    "mean_rel_err_depth_roi": 0.21806601971332107,
+    "detect_rate": 1.0,
+    "comment": "g2Metric 金属平板最接近冲压件局部表面, 是本任务的主对照子集"
+  },
+  "pass_criteria": {
+    "synthetic_detect_rate": ">= 0.85",
+    "synthetic_mean_rel_err_width": "< 25%",
+    "synthetic_mean_rel_err_depth": "< 25%",
+    "synthetic_mean_rel_err_length": "< 25%",
+    "imt_detect_rate": "> 0.70",
+    "plaque_roi_depth_rel_err": "< 35%  (局部 ROI 测深, 对应产线 3D 相机视野)"
+  },
+  "feasible": true,
+  "feasible_scope": "窄划痕宽/深/长在合成板上可用; 真实金属平板的深度也可对照。深拉成形的整件扫描里, 缺陷和零件形状缠在一起, 需要先切出局部表面再测。",
+  "note": "合成数据同时有宽/深/长真值, 用于定量验证测量公式; IMT Mines Albi 真实机械件 3D 扫描只提供缺陷点标注和参考深度, 用于验证真实噪声下的检出与深度。"
+}

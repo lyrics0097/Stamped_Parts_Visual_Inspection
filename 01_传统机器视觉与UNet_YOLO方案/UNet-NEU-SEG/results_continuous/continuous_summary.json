@@ -1,0 +1,75 @@
+{
+  "definition": {
+    "min_length_px": 60.0,
+    "min_aspect": 5.0
+  },
+  "cfg": {
+    "threshold": 0.8,
+    "min_area": 60,
+    "split": false,
+    "ext_t": null,
+    "ext_miss": 0,
+    "width": "mask"
+  },
+  "width_calibration": [
+    1.0850297085113145,
+    6.5854810827452175
+  ],
+  "val": {
+    "tp": 473,
+    "fp": 26,
+    "fn": 84,
+    "precision": 0.9478957915831663,
+    "recall": 0.8491921005385996,
+    "f1": 0.8958333333333333,
+    "length_err_mean": 11.699513742071883,
+    "length_err_median": 1.5600000000000023,
+    "length_err_p90": 38.93800000000001
+  },
+  "val_width": {
+    "width_err_mean": 1.9362367864693444,
+    "width_err_median": 0.8699999999999974,
+    "width_err_p90": 5.724000000000004,
+    "width_rel_median": 0.07459459459459454,
+    "width_within_1px": 0.587737843551797,
+    "width_within_2px": 0.7885835095137421
+  },
+  "test_baseline": {
+    "tp": 230,
+    "fp": 13,
+    "fn": 33,
+    "precision": 0.9465020576131687,
+    "recall": 0.8745247148288974,
+    "f1": 0.9090909090909091,
+    "length_err_mean": 8.49717391304348,
+    "length_err_median": 1.115000000000009,
+    "length_err_p90": 26.163999999999987,
+    "width_err_mean": 1.900652173913043,
+    "width_err_median": 0.8649999999999998,
+    "width_err_p90": 5.045,
+    "width_rel_median": 0.07692307692307693,
+    "width_within_1px": 0.6173913043478261,
+    "width_within_2px": 0.7652173913043478,
+    "length_within_5px": 0.7043478260869566,
+    "length_within_10px": 0.8130434782608695
+  },
+  "test_optimized": {
+    "tp": 230,
+    "fp": 13,
+    "fn": 33,
+    "precision": 0.9465020576131687,
+    "recall": 0.8745247148288974,
+    "f1": 0.9090909090909091,
+    "length_err_mean": 8.49717391304348,
+    "length_err_median": 1.115000000000009,
+    "length_err_p90": 26.163999999999987,
+    "width_err_mean": 1.900652173913043,
+    "width_err_median": 0.8649999999999998,
+    "width_err_p90": 5.045,
+    "width_rel_median": 0.07692307692307693,
+    "width_within_1px": 0.6173913043478261,
+    "width_within_2px": 0.7652173913043478,
+    "length_within_5px": 0.7043478260869566,
+    "length_within_10px": 0.8130434782608695
+  }
+}

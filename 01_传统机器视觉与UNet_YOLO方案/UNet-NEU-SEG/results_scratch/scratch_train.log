@@ -1,0 +1,46 @@
+GPU NVIDIA GeForce RTX 4080 SUPER  总显存 31.5GB  空闲 31.2GB  本进程上限 4.0GB
+训练集 3129，验证集 894，batch 2，划痕像素占比 2.59%，划痕类权重 4.47
+epoch 1/40  loss 0.8476  验证划痕IoU 0.636  45s
+epoch 2/40  loss 0.4394  验证划痕IoU 0.686  46s
+epoch 3/40  loss 0.2339  验证划痕IoU 0.668  45s
+epoch 4/40  loss 0.2176  验证划痕IoU 0.690  45s
+epoch 5/40  loss 0.1887  验证划痕IoU 0.715  46s
+epoch 6/40  loss 0.1945  验证划痕IoU 0.680  46s
+epoch 7/40  loss 0.1764  验证划痕IoU 0.726  46s
+epoch 8/40  loss 0.1702  验证划痕IoU 0.715  124s
+epoch 9/40  loss 0.1576  验证划痕IoU 0.711  94s
+epoch 10/40  loss 0.1544  验证划痕IoU 0.740  46s
+epoch 11/40  loss 0.1501  验证划痕IoU 0.742  46s
+epoch 12/40  loss 0.1451  验证划痕IoU 0.727  46s
+epoch 13/40  loss 0.1481  验证划痕IoU 0.751  46s
+epoch 14/40  loss 0.1377  验证划痕IoU 0.725  46s
+epoch 15/40  loss 0.1362  验证划痕IoU 0.722  50s
+epoch 16/40  loss 0.1306  验证划痕IoU 0.750  47s
+epoch 17/40  loss 0.1277  验证划痕IoU 0.745  47s
+epoch 18/40  loss 0.1259  验证划痕IoU 0.754  46s
+epoch 19/40  loss 0.1234  验证划痕IoU 0.755  45s
+epoch 20/40  loss 0.1170  验证划痕IoU 0.726  45s
+epoch 21/40  loss 0.1181  验证划痕IoU 0.750  46s
+epoch 22/40  loss 0.1169  验证划痕IoU 0.759  46s
+epoch 23/40  loss 0.1112  验证划痕IoU 0.764  46s
+epoch 24/40  loss 0.1083  验证划痕IoU 0.766  41s
+epoch 25/40  loss 0.1096  验证划痕IoU 0.765  40s
+epoch 26/40  loss 0.1090  验证划痕IoU 0.770  45s
+epoch 27/40  loss 0.1064  验证划痕IoU 0.769  45s
+epoch 28/40  loss 0.1049  验证划痕IoU 0.765  51s
+epoch 29/40  loss 0.1069  验证划痕IoU 0.768  48s
+epoch 30/40  loss 0.1038  验证划痕IoU 0.771  48s
+epoch 31/40  loss 0.1016  验证划痕IoU 0.769  46s
+epoch 32/40  loss 0.1016  验证划痕IoU 0.774  49s
+epoch 33/40  loss 0.1008  验证划痕IoU 0.771  50s
+epoch 34/40  loss 0.0999  验证划痕IoU 0.775  51s
+epoch 35/40  loss 0.0994  验证划痕IoU 0.777  51s
+epoch 36/40  loss 0.0998  验证划痕IoU 0.778  50s
+epoch 37/40  loss 0.0987  验证划痕IoU 0.778  49s
+epoch 38/40  loss 0.0983  验证划痕IoU 0.780  43s
+epoch 39/40  loss 0.0984  验证划痕IoU 0.779  41s
+epoch 40/40  loss 0.0983  验证划痕IoU 0.779  41s
+最好验证划痕IoU 0.780
+验证集选定 阈值 0.8 最小面积 60  精确率 0.854 召回率 0.814 F1 0.834
+测试图 447  像素IoU 0.794  标注 412 预测 405  对上 354 误报 51 漏检 58  精确率 0.874 召回率 0.859
+长度误差 中位 1.98px 平均 7.61px  宽度误差 中位 0.88px 平均 1.57px

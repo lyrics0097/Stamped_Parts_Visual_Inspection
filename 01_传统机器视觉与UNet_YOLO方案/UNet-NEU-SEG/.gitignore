@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+# 由 make_yolo_scratch.py 从 data_wenjian 重新生成
+yolo_scratch/
+# 云端训练的大检查点，只留在本地硬盘
+runs_yolo_backup/*.pt
+runs_yolo/

@@ -1,0 +1,22 @@
+{
+  "tp": 354,
+  "fp": 51,
+  "fn": 58,
+  "precision": 0.8740740740740741,
+  "recall": 0.8592233009708737,
+  "f1": 0.8665850673194615,
+  "pixel_iou": 0.7939145069529134,
+  "images": 447,
+  "threshold": 0.8,
+  "min_area": 60,
+  "length_err_median": 1.975,
+  "length_err_mean": 7.606214689265537,
+  "length_err_p90": 21.047,
+  "length_rel_median": 0.02810891070669721,
+  "length_within_5px": 0.7146892655367232,
+  "width_err_median": 0.875,
+  "width_err_mean": 1.5689265536723163,
+  "width_err_p90": 3.447,
+  "width_rel_median": 0.09101307189542485,
+  "width_within_3px": 0.8785310734463276
+}

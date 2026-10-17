@@ -1,0 +1,27 @@
+{
+  "tp": 339,
+  "fp": 47,
+  "fn": 73,
+  "precision": 0.8782383419689119,
+  "recall": 0.8228155339805825,
+  "f1": 0.849624060150376,
+  "pixel_iou": 0.7791775843466833,
+  "images": 447,
+  "cfg": {
+    "tta": true,
+    "threshold": 0.9,
+    "min_area": 60,
+    "gap": 0
+  },
+  "length_err_median": 2.0,
+  "length_err_mean": 8.813923303834809,
+  "length_err_p90": 27.004,
+  "length_rel_median": 0.02738356985808515,
+  "length_within_5px": 0.672566371681416,
+  "length_within_10px": 0.7817109144542773,
+  "width_err_median": 0.94,
+  "width_err_mean": 1.7690265486725665,
+  "width_err_p90": 3.8939999999999975,
+  "width_rel_median": 0.10028929604628738,
+  "width_within_2px": 0.8053097345132744
+}

@@ -1,0 +1,85 @@
+=== step1: existing model + TTA + bridging ===
+GPU NVIDIA GeForce RTX 4080 SUPER  总显存 31.5GB  空闲 31.2GB  本进程上限 4.0GB
+验证集 检测参数 TTA=True 阈值 0.9 最小面积 60  精确率 0.870 召回率 0.811 F1 0.839
+  拼接距离  0  F1 0.839  长度误差 平均 11.45 中位 2.13  宽度误差 平均 1.70
+  拼接距离 10  F1 0.836  长度误差 平均 12.74 中位 3.00  宽度误差 平均 1.79
+  拼接距离 20  F1 0.817  长度误差 平均 13.01 中位 3.39  宽度误差 平均 1.90
+  拼接距离 30  F1 0.809  长度误差 平均 13.60 中位 3.93  宽度误差 平均 1.95
+  拼接距离 45  F1 0.801  长度误差 平均 14.29 中位 3.97  宽度误差 平均 1.97
+验证集选定 {"tta": true, "threshold": 0.9, "min_area": 60, "gap": 0}
+测试图 447  像素IoU 0.779  标注 412 预测 386  对上 339 误报 47 漏检 73  精确率 0.878 召回率 0.823
+长度误差 中位 2.00px 平均 8.81px P90 27.00px  宽度误差 中位 0.94px 平均 1.77px P90 3.89px
+=== step2: width 32, 60 epochs ===
+GPU NVIDIA GeForce RTX 4080 SUPER  总显存 31.5GB  空闲 31.2GB  本进程上限 4.0GB
+训练集 3129，验证集 894，batch 2，宽度 32，划痕像素占比 2.59%，划痕类权重 4.47
+epoch 1/60  loss 0.8811  验证划痕IoU 0.619  43s
+epoch 2/60  loss 0.6669  验证划痕IoU 0.613  43s
+epoch 3/60  loss 0.3286  验证划痕IoU 0.637  42s
+epoch 4/60  loss 0.2447  验证划痕IoU 0.691  42s
+epoch 5/60  loss 0.2188  验证划痕IoU 0.680  44s
+epoch 6/60  loss 0.2035  验证划痕IoU 0.382  42s
+epoch 7/60  loss 0.1961  验证划痕IoU 0.684  43s
+epoch 8/60  loss 0.1910  验证划痕IoU 0.705  43s
+epoch 9/60  loss 0.1751  验证划痕IoU 0.721  43s
+epoch 10/60  loss 0.1695  验证划痕IoU 0.698  44s
+epoch 11/60  loss 0.1679  验证划痕IoU 0.707  42s
+epoch 12/60  loss 0.1529  验证划痕IoU 0.717  41s
+epoch 13/60  loss 0.1502  验证划痕IoU 0.735  42s
+epoch 14/60  loss 0.1448  验证划痕IoU 0.708  42s
+epoch 15/60  loss 0.1462  验证划痕IoU 0.744  43s
+epoch 16/60  loss 0.1216  验证划痕IoU 0.745  44s
+epoch 17/60  loss 0.1500  验证划痕IoU 0.718  43s
+epoch 18/60  loss 0.1291  验证划痕IoU 0.751  43s
+epoch 19/60  loss 0.1303  验证划痕IoU 0.746  43s
+epoch 20/60  loss 0.1350  验证划痕IoU 0.737  43s
+epoch 21/60  loss 0.1151  验证划痕IoU 0.752  42s
+epoch 22/60  loss 0.1252  验证划痕IoU 0.748  43s
+epoch 23/60  loss 0.1149  验证划痕IoU 0.759  42s
+epoch 24/60  loss 0.1270  验证划痕IoU 0.757  43s
+epoch 25/60  loss 0.1163  验证划痕IoU 0.754  43s
+epoch 26/60  loss 0.1193  验证划痕IoU 0.757  42s
+epoch 27/60  loss 0.1124  验证划痕IoU 0.748  42s
+epoch 28/60  loss 0.1118  验证划痕IoU 0.768  43s
+epoch 29/60  loss 0.1161  验证划痕IoU 0.763  43s
+epoch 30/60  loss 0.1072  验证划痕IoU 0.766  43s
+epoch 31/60  loss 0.1066  验证划痕IoU 0.768  43s
+epoch 32/60  loss 0.1088  验证划痕IoU 0.719  44s
+epoch 33/60  loss 0.1071  验证划痕IoU 0.771  43s
+epoch 34/60  loss 0.1057  验证划痕IoU 0.771  43s
+epoch 35/60  loss 0.1049  验证划痕IoU 0.770  42s
+epoch 36/60  loss 0.1016  验证划痕IoU 0.765  43s
+epoch 37/60  loss 0.1059  验证划痕IoU 0.771  44s
+epoch 38/60  loss 0.1001  验证划痕IoU 0.777  44s
+epoch 39/60  loss 0.0998  验证划痕IoU 0.781  43s
+epoch 40/60  loss 0.0987  验证划痕IoU 0.772  42s
+epoch 41/60  loss 0.1013  验证划痕IoU 0.764  42s
+epoch 42/60  loss 0.0982  验证划痕IoU 0.780  43s
+epoch 43/60  loss 0.0975  验证划痕IoU 0.780  42s
+epoch 44/60  loss 0.0962  验证划痕IoU 0.782  42s
+epoch 45/60  loss 0.0964  验证划痕IoU 0.784  42s
+epoch 46/60  loss 0.0949  验证划痕IoU 0.782  42s
+epoch 47/60  loss 0.0944  验证划痕IoU 0.784  42s
+epoch 48/60  loss 0.0943  验证划痕IoU 0.784  42s
+epoch 49/60  loss 0.0931  验证划痕IoU 0.787  41s
+epoch 50/60  loss 0.0929  验证划痕IoU 0.787  41s
+epoch 51/60  loss 0.0921  验证划痕IoU 0.785  42s
+epoch 52/60  loss 0.0925  验证划痕IoU 0.787  43s
+epoch 53/60  loss 0.0922  验证划痕IoU 0.789  44s
+epoch 54/60  loss 0.0921  验证划痕IoU 0.789  44s
+epoch 55/60  loss 0.0935  验证划痕IoU 0.789  44s
+epoch 56/60  loss 0.0909  验证划痕IoU 0.787  44s
+epoch 57/60  loss 0.0912  验证划痕IoU 0.789  43s
+epoch 58/60  loss 0.0908  验证划痕IoU 0.789  43s
+epoch 59/60  loss 0.0920  验证划痕IoU 0.788  44s
+epoch 60/60  loss 0.0910  验证划痕IoU 0.789  44s
+最好验证划痕IoU 0.789
+验证集 检测参数 TTA=False 阈值 0.8 最小面积 60  精确率 0.870 召回率 0.814 F1 0.841
+  拼接距离  0  F1 0.841  长度误差 平均 10.50 中位 2.05  宽度误差 平均 1.69
+  拼接距离 10  F1 0.836  长度误差 平均 11.34 中位 2.66  宽度误差 平均 1.78
+  拼接距离 20  F1 0.820  长度误差 平均 12.11 中位 2.92  宽度误差 平均 1.85
+  拼接距离 30  F1 0.812  长度误差 平均 12.81 中位 2.95  宽度误差 平均 1.96
+  拼接距离 45  F1 0.806  长度误差 平均 13.55 中位 2.99  宽度误差 平均 1.98
+验证集选定 {"tta": false, "threshold": 0.8, "min_area": 60, "gap": 0}
+测试图 447  像素IoU 0.803  标注 412 预测 390  对上 342 误报 48 漏检 70  精确率 0.877 召回率 0.830
+长度误差 中位 1.98px 平均 8.33px P90 24.02px  宽度误差 中位 0.86px 平均 1.55px P90 3.24px
+=== ALL DONE ===

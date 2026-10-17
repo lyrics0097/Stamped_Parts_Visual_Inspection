@@ -1,0 +1,23 @@
+# 忽略 Python 缓存与 IDE 配置
+__pycache__/
+*.py[cod]
+.idea/
+.vscode/
+.cursor/
+
+# 忽略大体积 AI 模型权重（统一托管于 GitHub Releases: v1.0-models）
+*.pth
+*.pt
+*.bin
+*.onnx
+*.safetensors
+*.h5
+
+# 忽略大体积数据集压缩包与大型点云矩阵（统一托管于 GitHub Releases: v1.0-datasets）
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+*.npy
+!**/object_dino_model.npz

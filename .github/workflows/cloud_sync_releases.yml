@@ -1,0 +1,91 @@
+name: Cloud Sync Large Releases (Zero Local Bandwidth)
+
+on:
+  workflow_dispatch:
+    inputs:
+      src_token:
+        description: "Token for cross-repo cloud transfer"
+        required: true
+      ms_token:
+        description: "Token for ModelScope cloud transfer"
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  cloud-transfer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Releases and Cloud-Relay Large Assets at 10Gbps
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SRC_TOKEN: ${{ github.event.inputs.src_token }}
+          MS_TOKEN: ${{ github.event.inputs.ms_token }}
+          TARGET_REPO: ${{ github.repository }}
+          SOURCE_REPO: "lyrics0097/--------"
+        run: |
+          set -e
+          echo "=== 1. Ensuring Target Releases Exist on $TARGET_REPO ==="
+          gh release view v1.0-models --repo "$TARGET_REPO" >/dev/null 2>&1 || \
+            gh release create v1.0-models --repo "$TARGET_REPO" \
+              --title "🧠【AI模型权重库】UNet划痕分割 / YOLO划痕检测 / DINOv3 / SAM / 工件记忆库" \
+              --notes "汇总本项目全部预训练模型、划痕分割/检测训练权重与样品特征记忆库（详见仓库首页 README.md）。"
+
+          gh release view v1.0-datasets --repo "$TARGET_REPO" >/dev/null 2>&1 || \
+            gh release create v1.0-datasets --repo "$TARGET_REPO" \
+              --title "📊【冲压件与划痕数据集】产线实拍划痕 / D455深度抓拍 / 3D冲压缺陷点云 / YOLO&UNet数据集" \
+              --notes "汇总本项目产线实拍冲压件划痕样本、D455 深度抓拍、IMT-Albi 3D 划痕点云与 YOLO/UNet 训练数据集（详见仓库首页 README.md）。"
+
+          gh release view v1.0-docs --repo "$TARGET_REPO" >/dev/null 2>&1 || \
+            gh release create v1.0-docs --repo "$TARGET_REPO" \
+              --title "📚【文献报告与方案PPT】冲压件视觉系统开发方案 / D455实验报告 / 划痕检测核心论文" \
+              --notes "汇总本项目系统开发方案 PPT、RealSense D455 深度相机实验报告及金属表面划痕视觉检测核心论文合集。"
+
+          mkdir -p /tmp/relay
+          cd /tmp/relay
+
+          relay_asset() {
+            local src_tag="$1"
+            local asset_name="$2"
+            local dst_tag="$3"
+            echo "--- Relaying $asset_name ($src_tag -> $dst_tag) ---"
+            if gh release view "$dst_tag" --repo "$TARGET_REPO" --json assets -q ".assets[].name" | grep -Fxq "$asset_name"; then
+              echo "[SKIP] $asset_name already exists in $dst_tag"
+              return 0
+            fi
+            GH_TOKEN="$SRC_TOKEN" gh release download "$src_tag" --repo "$SOURCE_REPO" --pattern "$asset_name" --clobber
+            gh release upload "$dst_tag" "$asset_name" --repo "$TARGET_REPO" --clobber
+            rm -f "$asset_name"
+            echo "[DONE] $asset_name relayed in cloud!"
+          }
+
+          echo "=== 2. Cloud-to-Cloud Transfer of Models (10Gbps Azure Internal Network) ==="
+          relay_asset "v1.0-models" "dinov3_vitb16_pretrain_lvd1689m-73cec8be.pth" "v1.0-models"
+          relay_asset "v1.0-models" "sam_b.pt" "v1.0-models"
+          relay_asset "v1.0-models" "wild_raw_bank.pth" "v1.0-models"
+          relay_asset "v1.0-models" "wild_sam_bank.pth" "v1.0-models"
+
+          echo "=== 3. Cloud-to-Cloud Transfer of Datasets (10Gbps Azure Internal Network) ==="
+          relay_asset "v1.0-datasets" "UNet-NEU-SEG_dataset.zip" "v1.0-datasets"
+          relay_asset "v1.0-datasets" "IMT_Albi_defect_3d.zip" "v1.0-datasets"
+          relay_asset "v1.0-datasets" "imt_albi_npy_labels.zip" "v1.0-datasets"
+          relay_asset "v1.0-datasets" "20260926_205128.zip" "v1.0-datasets"
+
+          if [ -n "$MS_TOKEN" ]; then
+            echo "=== 4. Checking ModelScope Relay for Stamping Specific Assets ==="
+            git lfs install
+            git clone "https://oauth2:${MS_TOKEN}@www.modelscope.cn/datasets/lyrics0097/AI_datasheet.git" /tmp/ms_data || true
+            if [ -d "/tmp/ms_data/stamping_relay" ]; then
+              for f in /tmp/ms_data/stamping_relay/models/*; do
+                [ -f "$f" ] && gh release upload v1.0-models "$f" --repo "$TARGET_REPO" --clobber
+              done
+              for f in /tmp/ms_data/stamping_relay/datasets/*; do
+                [ -f "$f" ] && gh release upload v1.0-datasets "$f" --repo "$TARGET_REPO" --clobber
+              done
+              for f in /tmp/ms_data/stamping_relay/docs/*; do
+                [ -f "$f" ] && gh release upload v1.0-docs "$f" --repo "$TARGET_REPO" --clobber
+              done
+            fi
+          fi
+          echo "=== ALL CLOUD TRANSFERS COMPLETED! ==="

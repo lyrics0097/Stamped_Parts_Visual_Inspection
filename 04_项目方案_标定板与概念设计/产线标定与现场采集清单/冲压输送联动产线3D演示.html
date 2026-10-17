@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>冲压 - 输送 联动产线 3D 可视化</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%; overflow: hidden; background: #0d1220;
+    font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+  }
+  #c { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+  #c:active { cursor: grabbing; }
+
+  #panel {
+    position: fixed; top: 18px; left: 18px; width: 312px; padding: 16px 18px;
+    background: rgba(16, 23, 38, .82); border: 1px solid rgba(90, 140, 220, .28);
+    border-radius: 14px; backdrop-filter: blur(10px); color: #dce6f5;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .45); user-select: none;
+  }
+  #panel h1 { font-size: 16.5px; font-weight: 700; letter-spacing: .5px; color: #eaf2ff; }
+  #panel h1 span { color: #4da3ff; }
+  .sub { font-size: 11.5px; color: #7f93b3; margin-top: 5px; letter-spacing: .4px; }
+  .hr { height: 1px; background: linear-gradient(90deg, rgba(90,140,220,.45), transparent); margin: 12px 0; }
+
+  .row { display: flex; gap: 9px; }
+  button {
+    flex: 1; padding: 9px 0; font-size: 12.5px; font-family: inherit; cursor: pointer;
+    color: #dbe7f7; background: rgba(58, 92, 148, .35);
+    border: 1px solid rgba(90, 140, 220, .4); border-radius: 9px; transition: .18s;
+  }
+  button:hover { background: rgba(76, 140, 235, .5); border-color: rgba(120,180,255,.75); color: #fff; }
+  button:active { transform: translateY(1px); }
+  button.on { background: rgba(42, 168, 110, .45); border-color: rgba(70, 220, 150, .7); }
+  button.small { padding: 7px 0; font-size: 11.5px; }
+
+  .field { margin-top: 13px; font-size: 12px; color: #8ea6c8; }
+  .field .val { float: right; color: #5fb0ff; font-weight: 700; }
+  input[type=range] {
+    -webkit-appearance: none; width: 100%; height: 5px; margin-top: 9px; border-radius: 4px;
+    background: linear-gradient(90deg, #2f6fe0, #1b2b47); outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 15px; height: 15px; border-radius: 50%;
+    background: #6fb6ff; border: 2px solid #0d1220; cursor: pointer;
+    box-shadow: 0 0 8px rgba(90, 170, 255, .85);
+  }
+
+  .stats { margin-top: 13px; font-size: 12px; color: #8ea6c8; line-height: 1.95; }
+  .stats b { color: #5fb0ff; font-size: 14px; }
+  .stats .phase { color: #ffcf5c; font-weight: 700; }
+
+  .hint {
+    margin-top: 12px; font-size: 11px; color: #5d6f8c; line-height: 1.7;
+    border-top: 1px dashed rgba(90, 140, 220, .25); padding-top: 10px;
+  }
+
+  #legend {
+    position: fixed; right: 18px; bottom: 18px; padding: 12px 16px; font-size: 11.5px;
+    color: #98aecb; background: rgba(16, 23, 38, .78);
+    border: 1px solid rgba(90, 140, 220, .25); border-radius: 12px;
+    backdrop-filter: blur(8px); line-height: 1.85; user-select: none;
+  }
+  #legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 7px; }
+
+  #flow {
+    position: fixed; left: 50%; transform: translateX(-50%); top: 18px; padding: 9px 20px;
+    font-size: 12.5px; color: #b7cbe6; background: rgba(16, 23, 38, .78);
+    border: 1px solid rgba(90, 140, 220, .25); border-radius: 11px;
+    backdrop-filter: blur(8px); user-select: none; letter-spacing: .5px;
+  }
+  #flow em { font-style: normal; color: #4da3ff; font-weight: 700; }
+  #flow .on { color: #ffcf5c; font-weight: 700; }
+
+  #vision {
+    position: fixed; top: 18px; right: 18px; width: 252px; padding: 14px 16px;
+    background: rgba(16, 23, 38, .82); border: 1px solid rgba(90, 140, 220, .28);
+    border-radius: 14px; backdrop-filter: blur(10px); color: #dce6f5;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .45); user-select: none;
+  }
+  #vision .vtitle { font-size: 13.5px; font-weight: 700; color: #eaf2ff; letter-spacing: .4px; }
+  #vision .vtitle span { color: #4da3ff; font-size: 10px; letter-spacing: 1.4px; }
+  #vision .vline { height: 1px; background: linear-gradient(90deg, rgba(90,140,220,.45), transparent); margin: 10px 0; }
+  #vision .vrow { display: flex; justify-content: space-between; font-size: 11.5px; color: #8ea6c8; line-height: 1.95; }
+  #vision .vrow b { color: #5fb0ff; font-size: 12px; font-weight: 700; }
+  #vision b.vwait { color: #7f93b3; }
+  #vision b.vok { color: #45d67f; }
+  #vision b.vng { color: #ff7a6b; }
+  #vision .vtip { font-size: 10.5px; color: #5d6f8c; line-height: 1.7; }
+
+  #err {
+    display: none; position: fixed; inset: 0; text-align: center; color: #ff8b7b;
+    font-size: 15px; line-height: 2.2; background: #0d1220; padding-top: 40vh;
+  }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="panel">
+  <h1>冲压 - 输送 <span>联动产线</span></h1>
+  <div class="sub">H 型龙门冲床 + 双向输送线 + 机器视觉检测 · WebGL</div>
+  <div class="hr"></div>
+  <div class="row">
+    <button id="btnRun" class="on">⏸ 暂停产线</button>
+    <button id="btnAdd">＋ 投放板料</button>
+  </div>
+  <div class="row" style="margin-top:9px">
+    <button id="btnAll" class="small">全景视图</button>
+    <button id="btnPress" class="small">冲压机特写</button>
+  </div>
+  <div class="row" style="margin-top:9px">
+    <button id="btnVision" class="small">🔍 视觉检测站特写</button>
+  </div>
+  <div class="field">
+    <span>产线节拍</span><span class="val" id="spdVal">1.0×</span>
+    <input type="range" id="spd" min="0.2" max="3" step="0.1" value="1">
+  </div>
+  <div class="stats">
+    当前工序:<span class="phase" id="phase">待料</span><br>
+    已产出工件:<b id="cnt">0</b> 件<br>
+    待加工板料:<b id="queue">0</b> 件
+  </div>
+  <div class="hint">🖱 左键拖拽 — 旋转视角<br>🔍 滚轮 — 缩放模型</div>
+</div>
+
+<div id="vision">
+  <div class="vtitle">🔍 视觉检测站 <span>VISION</span></div>
+  <div class="vline"></div>
+  <div class="vrow"><span>拍照序号</span><b id="vCount">0</b></div>
+  <div class="vrow"><span>判定结果</span><b id="vResult" class="vwait">待机</b></div>
+  <div class="vrow"><span>外形尺寸</span><b id="vDim">— —</b></div>
+  <div class="vrow"><span>凸包高度</span><b id="vDome">— —</b></div>
+  <div class="vrow"><span>检测节拍</span><b id="vRate">— —</b></div>
+  <div class="vline"></div>
+  <div class="vtip">工件通过对射式光电开关时自动触发拍照，检测成型件外形与凸包尺寸</div>
+</div>
+
+<div id="flow">
+  进料输送 <em>→</em> 冲压成型 <em>→</em> 视觉检测 <em>→</em> 出料输送
+</div>
+
+<div id="legend">
+  <div><i style="background:#1f2839"></i>冲床机身 / 传送机架</div>
+  <div><i style="background:#f3c010"></i>安全警示与挡边</div>
+  <div><i style="background:#b9c1cc"></i>板料 / 成型冲压件</div>
+  <div><i style="background:#66ccff"></i>视觉检测龙门架 / 光锥</div>
+  <div><i style="background:#d6382b"></i>急停按钮</div>
+</div>
+
+<div id="err">Three.js 资源加载失败<br>请检查网络连接后刷新页面</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+if (typeof THREE === 'undefined') {
+  document.write('<script src="https://unpkg.com/three@0.128.0/build/three.min.js"><\/script>');
+}
+</script>
+<script>
+(function () {
+  'use strict';
+
+  const $ = id => document.getElementById(id);
+
+  if (typeof THREE === 'undefined') {
+    $('err').style.display = 'block';
+    return;
+  }
+
+  /* ============================================================
+     1. 渲染环境
+     ============================================================ */
+  const canvas = $('c');
+  const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0d1220);
+  scene.fog = new THREE.Fog(0x0d1220, 42, 88);
+
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 400);
+
+  scene.add(new THREE.HemisphereLight(0xbcd4f5, 0x1a2130, 0.85));
+
+  const keyLight = new THREE.DirectionalLight(0xffffff, 1.15);
+  keyLight.position.set(14, 22, 16);
+  keyLight.castShadow = true;
+  keyLight.shadow.mapSize.set(2048, 2048);
+  const sc = keyLight.shadow.camera;
+  sc.left = -24; sc.right = 24; sc.top = 16; sc.bottom = -16; sc.near = 1; sc.far = 90;
+  keyLight.shadow.bias = -0.0008;
+  keyLight.shadow.normalBias = 0.02;
+  scene.add(keyLight);
+
+  const rimLight = new THREE.DirectionalLight(0x7fa8ff, 0.5);
+  rimLight.position.set(-16, 12, -14);
+  scene.add(rimLight);
+
+  const fillLight = new THREE.DirectionalLight(0xffd9a8, 0.24);
+  fillLight.position.set(4, 4, 20);
+  scene.add(fillLight);
+
+  /* ============================================================
+     2. 材质库
+     ============================================================ */
+  const M = {
+    body:     new THREE.MeshStandardMaterial({ color: 0x33415c, metalness: 0.68, roughness: 0.42 }),
+    bodyDark: new THREE.MeshStandardMaterial({ color: 0x1f2839, metalness: 0.62, roughness: 0.50 }),
+    steel:    new THREE.MeshStandardMaterial({ color: 0xb9c1cc, metalness: 0.95, roughness: 0.22 }),
+    machined: new THREE.MeshStandardMaterial({ color: 0x8d97a6, metalness: 0.90, roughness: 0.30 }),
+    die:      new THREE.MeshStandardMaterial({ color: 0x717d8c, metalness: 0.92, roughness: 0.26 }),
+    yellow:   new THREE.MeshStandardMaterial({ color: 0xf3c010, metalness: 0.35, roughness: 0.50 }),
+    red:      new THREE.MeshStandardMaterial({ color: 0xd6382b, metalness: 0.30, roughness: 0.50 }),
+    green:    new THREE.MeshStandardMaterial({ color: 0x27b871, metalness: 0.30, roughness: 0.50, emissive: 0x0a3a22 }),
+    rubber:   new THREE.MeshStandardMaterial({ color: 0x14181f, metalness: 0.10, roughness: 0.92 }),
+    screen:   new THREE.MeshStandardMaterial({ color: 0x0a1a2a, metalness: 0.40, roughness: 0.30, emissive: 0x10405f, emissiveIntensity: 0.9 })
+  };
+
+  function box(w, h, d, mat, x, y, z, parent) {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+    m.position.set(x, y, z);
+    m.castShadow = true; m.receiveShadow = true;
+    (parent || scene).add(m);
+    return m;
+  }
+  function cyl(rt, rb, h, mat, x, y, z, parent, seg) {
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg || 32), mat);
+    m.position.set(x, y, z);
+    m.castShadow = true; m.receiveShadow = true;
+    (parent || scene).add(m);
+    return m;
+  }
+
+  /* ============================================================
+     3. 地面
+     ============================================================ */
+  const ground = new THREE.Mesh(
+    new THREE.CircleGeometry(60, 64),
+    new THREE.MeshStandardMaterial({ color: 0x141a27, metalness: 0.15, roughness: 0.95 })
+  );
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -0.01;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  const grid = new THREE.GridHelper(120, 120, 0x2c4a75, 0x1c2739);
+  grid.position.y = 0.002;
+  grid.material.transparent = true;
+  grid.material.opacity = 0.5;
+  scene.add(grid);
+
+  /* ============================================================
+     4. 关键尺寸常量
+     ============================================================ */
+  const BELT_Y = 1.45;        // 输送带面高度（与冲压机工作台等高）
+  const ROLL_R = 0.25;
+  const ROLL_Y = BELT_Y - ROLL_R;
+  const DECK_Y = 1.42;        // 皮带板中心
+
+  const BELT_LEN = 13.4;      // 单条皮带长度
+  const BELT_HALF = BELT_LEN / 2;
+  const BELT_REP = 24;
+  const UNIT_U = BELT_LEN / BELT_REP;
+
+  const IN_CX = 9.30;         // 进料带中心 x
+  const OUT_CX = -9.30;       // 出料带中心 x
+
+  const PART_Y = BELT_Y + 0.06;   // 工件基准高度（底面贴合带面）
+  const SPAWN_X = 16.20;          // 板料生成点（位于机罩内）
+  const RECYCLE_X = -16.20;       // 成品回收点
+
+  const QUEUE_X = 2.80;           // 进料排队位
+  const FORM_X = 0;               // 冲压工位
+  const EJECT_X = -2.80;          // 出料交接位
+  const GAP = 1.70;               // 队列间距
+
+  const SLIDE_MAX = 3.60;         // 滑块上位（上模底面 2.70）
+  const SLIDE_MIN = 2.47;         // 滑块下死点（上模底面 1.57 = 板料顶面）
+  const PISTON_TOP = 4.60;        // 活塞杆顶端（顶梁底面）
+  const SLIDE_TOP_FIX = 0.40;     // 滑块顶面偏移
+
+  const CAM_X = -6.00;            // 视觉检测工位（出料带上游，紧邻冲压机）
+  const GANTRY_H = 3.30;          // 检测龙门架高度
+  const CAM_LENS_Y = 2.51;        // 工业相机镜头高度
+
+  /* ============================================================
+     5. 传送带构建
+     ============================================================ */
+  function makeBeltTexture() {
+    const cv = document.createElement('canvas');
+    cv.width = 64; cv.height = 64;
+    const g = cv.getContext('2d');
+
+    g.fillStyle = '#23262e';
+    g.fillRect(0, 0, 64, 64);
+    g.fillStyle = '#2d313b';
+    g.fillRect(0, 0, 64, 7);
+    g.fillStyle = '#191c22';
+    g.fillRect(0, 30, 64, 9);
+    g.fillStyle = '#343947';
+    g.fillRect(0, 12, 64, 2);
+    g.fillStyle = 'rgba(255,255,255,0.035)';
+    for (let i = 0; i < 140; i++) {
+      g.fillRect(Math.random() * 64, Math.random() * 64, 1, 1);
+    }
+
+    const t = new THREE.CanvasTexture(cv);
+    t.wrapS = THREE.RepeatWrapping;
+    t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(BELT_REP, 1);
+    t.anisotropy = 8;
+    return t;
+  }
+
+  const belts = [];      // { cx, dir, texTop, texBot, rollers:[], group }
+
+  function buildConveyor(cx) {
+    const grp = new THREE.Group();
+    scene.add(grp);
+
+    const texTop = makeBeltTexture();
+    const texBot = makeBeltTexture();
+    const matTop = new THREE.MeshStandardMaterial({ map: texTop, metalness: 0.15, roughness: 0.88 });
+    const matBot = new THREE.MeshStandardMaterial({ map: texBot, metalness: 0.15, roughness: 0.88 });
+
+    // 上下皮带面
+    box(BELT_LEN, 0.06, 1.80, matTop, cx, BELT_Y - 0.03, 0, grp);
+    box(BELT_LEN, 0.06, 1.80, matBot, cx, ROLL_Y - ROLL_R + 0.03, 0, grp);
+
+    // 两端滚筒
+    const rollers = [];
+    [cx + BELT_HALF, cx - BELT_HALF].forEach(function (x) {
+      const g = new THREE.Group();
+      g.position.set(x, ROLL_Y, 0);
+      grp.add(g);
+
+      const geo = new THREE.CylinderGeometry(ROLL_R, ROLL_R, 1.90, 36);
+      geo.rotateX(Math.PI / 2);
+      const drum = new THREE.Mesh(geo, M.rubber);
+      drum.castShadow = true; drum.receiveShadow = true;
+      g.add(drum);
+
+      const ag = new THREE.CylinderGeometry(0.06, 0.06, 2.35, 16);
+      ag.rotateX(Math.PI / 2);
+      const axis = new THREE.Mesh(ag, M.steel);
+      axis.castShadow = true;
+      g.add(axis);
+
+      [-0.97, 0.97].forEach(function (z) {          // 端面辐条，便于观察转动
+        for (let i = 0; i < 3; i++) {
+          const s = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.05, 0.05), M.machined);
+          s.position.set(0, 0, z);
+          s.rotation.z = i * Math.PI / 3;
+          s.castShadow = true;
+          g.add(s);
+        }
+      });
+
+      rollers.push(g);
+    });
+
+    // 机架侧梁
+    [1.00, -1.00].forEach(function (z) {
+      box(BELT_LEN + 0.6, 0.30, 0.10, M.bodyDark, cx, ROLL_Y, z, grp);
+    });
+
+    // 支腿（四组）
+    [-4.80, -1.60, 1.60, 4.80].forEach(function (off) {
+      const x = cx + off;
+      box(0.16, 1.05, 0.16, M.body, x, 0.525, 0.95, grp);
+      box(0.16, 1.05, 0.16, M.body, x, 0.525, -0.95, grp);
+      box(0.16, 0.16, 2.06, M.body, x, 0.30, 0, grp);
+      box(0.52, 0.08, 0.52, M.rubber, x, 0.04, 0.95, grp);
+      box(0.52, 0.08, 0.52, M.rubber, x, 0.04, -0.95, grp);
+    });
+
+    // 两侧安全导料挡边
+    [0.93, -0.93].forEach(function (z) {
+      box(BELT_LEN - 0.2, 0.18, 0.07, M.yellow, cx, BELT_Y + 0.09, z, grp);
+    });
+
+    // 末端进出料机罩
+    const hoodSign = (cx > 0) ? 1 : -1;
+    const hx = cx + hoodSign * BELT_HALF;
+    box(1.40, 0.10, 2.20, M.body, hx, 1.95, 0, grp);
+    box(0.10, 1.40, 2.20, M.body, hx + hoodSign * 0.70, 1.25, 0, grp);
+    box(1.40, 1.40, 0.10, M.body, hx, 1.25, 1.10, grp);
+    box(1.40, 1.40, 0.10, M.body, hx, 1.25, -1.10, grp);
+    box(1.46, 0.14, 2.26, M.yellow, hx, 2.05, 0, grp);
+
+    belts.push({ cx: cx, texTop: texTop, texBot: texBot, rollers: rollers, group: grp });
+  }
+
+  buildConveyor(IN_CX);
+  buildConveyor(OUT_CX);
+
+  /* ============================================================
+     6. 冲压机构建（H 型龙门 / 后置传动）
+     ============================================================ */
+  const press = new THREE.Group();
+  scene.add(press);
+
+  // 底座
+  box(4.2, 0.63, 2.8, M.bodyDark, 0, 0.315, 0, press);
+  box(4.0, 0.08, 2.6, M.machined, 0, 0.63, 0, press);
+  [-1.7, 1.7].forEach(function (x) {
+    [-1.1, 1.1].forEach(function (z) {
+      box(0.50, 0.12, 0.50, M.rubber, x, 0.06, z, press);
+    });
+  });
+
+  // 工作台 / 下模 / 垫板
+  box(2.6, 0.35, 1.9, M.machined, 0, 0.805, 0, press);
+  box(1.7, 0.35, 1.3, M.die,      0, 1.155, 0, press);
+  box(1.4, 0.09, 1.0, M.steel,    0, 1.405, 0, press);
+
+  // 后立柱（C 型机身）
+  box(3.2, 3.97, 0.55, M.body, 0, 2.615, -1.125, press);
+  [1.0, -1.0].forEach(function (z) {           // 立柱侧面警示条
+    box(0.55, 0.30, 0.06, M.yellow, 1.30, 1.15, z * 1.15, press);
+    box(0.55, 0.30, 0.06, M.yellow, -1.30, 1.15, z * 1.15, press);
+  });
+
+  // 顶部横梁
+  box(3.6, 0.70, 2.6, M.body, 0, 4.950, -0.10, press);
+  box(3.0, 0.10, 2.2, M.machined, 0, 5.350, -0.10, press);
+
+  // 传动箱 / 传动轴 / 飞轮
+  box(1.3, 1.2, 1.5, M.bodyDark, 0, 6.00, -0.85, press);
+
+  const shaftGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.95, 24);
+  shaftGeo.rotateX(Math.PI / 2);
+  const shaft = new THREE.Mesh(shaftGeo, M.steel);
+  shaft.position.set(0, 6.00, -1.30);
+  shaft.castShadow = true;
+  press.add(shaft);
+
+  const flyGroup = new THREE.Group();
+  flyGroup.position.set(0, 6.00, -1.90);
+  press.add(flyGroup);
+
+  const discGeo = new THREE.CylinderGeometry(0.90, 0.90, 0.30, 56);
+  discGeo.rotateX(Math.PI / 2);
+  const disc = new THREE.Mesh(discGeo, M.machined);
+  disc.castShadow = true; disc.receiveShadow = true;
+  flyGroup.add(disc);
+
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.88, 0.085, 14, 56), M.steel);
+  rim.castShadow = true; rim.receiveShadow = true;
+  flyGroup.add(rim);
+
+  const hubGeo = new THREE.CylinderGeometry(0.27, 0.27, 0.50, 28);
+  hubGeo.rotateX(Math.PI / 2);
+  const hub = new THREE.Mesh(hubGeo, M.steel);
+  hub.castShadow = true; hub.receiveShadow = true;
+  flyGroup.add(hub);
+
+  for (let i = 0; i < 3; i++) {
+    const spoke = box(0.09, 1.55, 0.32, M.bodyDark, 0, 0, 0, flyGroup);
+    spoke.rotation.z = i * Math.PI / 3;
+  }
+
+  // 滑块总成（含镶嵌式上模）
+  const slideGroup = new THREE.Group();
+  slideGroup.position.set(0, SLIDE_MAX, 0);
+  press.add(slideGroup);
+
+  box(2.2, 0.80, 1.6, M.body, 0, 0, 0, slideGroup);      // 滑块本体
+  box(2.0, 0.14, 1.6, M.steel, 0, -0.40, 0, slideGroup); // 模座过渡板
+  box(0.62, 0.14, 0.62, M.steel, 0, 0.47, 0, slideGroup);// 活塞杆法兰
+
+  // 上模：框式凹模（中间留出凸包型腔）
+  box(1.70, 0.50, 0.35, M.die, 0, -0.65, 0.475, slideGroup);
+  box(1.70, 0.50, 0.35, M.die, 0, -0.65, -0.475, slideGroup);
+  box(0.35, 0.50, 0.60, M.die, -0.675, -0.65, 0, slideGroup);
+  box(0.35, 0.50, 0.60, M.die, 0.675, -0.65, 0, slideGroup);
+  box(1.70, 0.10, 1.30, M.machined, 0, -0.45, 0, slideGroup);
+
+  // 活塞杆
+  const pistonGeo = new THREE.CylinderGeometry(0.19, 0.19, 1, 24);
+  const piston = new THREE.Mesh(pistonGeo, M.steel);
+  piston.castShadow = true; piston.receiveShadow = true;
+  press.add(piston);
+
+  // 控制柜
+  cyl(0.07, 0.07, 1.40, M.steel, -1.60, 0.70, 1.70, press, 20);
+  box(0.52, 0.72, 0.40, M.bodyDark, -1.60, 1.55, 1.70, press);
+  const eStop = cyl(0.085, 0.085, 0.09, M.red, -1.60, 1.81, 1.91, press, 24);
+  eStop.rotation.x = Math.PI / 2;
+  const startBtn = cyl(0.058, 0.058, 0.09, M.green, -1.60, 1.55, 1.91, press, 24);
+  startBtn.rotation.x = Math.PI / 2;
+  box(0.30, 0.16, 0.05, M.screen, -1.60, 1.28, 1.91, press);
+
+  /* ============================================================
+     7. 过渡桥板（输送带 ←→ 冲压工作台）
+     ============================================================ */
+  [1, -1].forEach(function (s) {
+    box(1.90, 0.06, 1.40, M.steel, s * 1.65, DECK_Y, 0, press);
+    box(0.16, 1.39, 0.16, M.body, s * 2.35, 0.695, 0.60, press);
+    box(0.16, 1.39, 0.16, M.body, s * 2.35, 0.695, -0.60, press);
+  });
+
+  /* ============================================================
+     7.5 视觉检测站（龙门架 + 工业相机）
+     安装于出料带上游（紧邻冲压机），对成型件自动拍照检测
+     ============================================================ */
+  const gantry = new THREE.Group();
+  scene.add(gantry);
+
+  const lensMat = new THREE.MeshStandardMaterial({
+    color: 0x9fd8ff, metalness: 0.35, roughness: 0.15,
+    emissive: 0x2f9bff, emissiveIntensity: 0.6
+  });
+  const coneMat = new THREE.MeshBasicMaterial({
+    color: 0x66ccff, transparent: true, opacity: 0.08,
+    side: THREE.DoubleSide, depthWrite: false
+  });
+  const ledMat = new THREE.MeshStandardMaterial({
+    color: 0xffffff, emissive: 0xdff0ff, emissiveIntensity: 1.5
+  });
+
+  // 门式立柱 + 底板 + 警示条 + 节点加强块
+  [1.25, -1.25].forEach(function (z) {
+    box(0.24, GANTRY_H, 0.24, M.body, CAM_X, GANTRY_H / 2, z, gantry);
+    box(0.60, 0.10, 0.60, M.bodyDark, CAM_X, 0.05, z, gantry);
+    box(0.30, 0.26, 0.05, M.yellow, CAM_X, 0.95, z + (z > 0 ? 0.13 : -0.13), gantry);
+    box(0.26, 0.26, 0.26, M.machined, CAM_X, GANTRY_H - 0.13, z, gantry);
+  });
+
+  // 顶部横梁
+  box(0.40, 0.26, 2.90, M.body, CAM_X, GANTRY_H + 0.02, 0, gantry);
+  box(0.46, 0.08, 2.96, M.machined, CAM_X, GANTRY_H + 0.19, 0, gantry);
+
+  // 相机吊架 / 机身 / 镜头 / 镜片
+  box(0.34, 0.12, 0.34, M.machined, CAM_X, GANTRY_H - 0.18, 0, gantry);
+  box(0.42, 0.44, 0.42, M.bodyDark, CAM_X, GANTRY_H - 0.46, 0, gantry);
+  cyl(0.14, 0.14, 0.26, M.machined, CAM_X, CAM_LENS_Y, 0, gantry, 28);
+  cyl(0.11, 0.11, 0.05, lensMat, CAM_X, CAM_LENS_Y - 0.14, 0, gantry, 28);
+
+  // 两侧 LED 光源
+  [-0.34, 0.34].forEach(function (z) {
+    box(0.12, 0.12, 0.40, M.steel, CAM_X, CAM_LENS_Y + 0.11, z, gantry);
+    box(0.07, 0.07, 0.34, ledMat, CAM_X, CAM_LENS_Y + 0.03, z, gantry);
+  });
+
+  // 视觉光锥（顶端位于镜头，向下张开覆盖工件）
+  const cone = new THREE.Mesh(new THREE.ConeGeometry(0.66, 0.94, 40, 1, true), coneMat);
+  cone.position.set(CAM_X, 1.91, 0);
+  gantry.add(cone);
+
+  // 扫描光平面（拍照瞬间自上而下扫过工件）
+  const scanPlane = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.5, 1.5),
+    new THREE.MeshBasicMaterial({ color: 0x66ccff, transparent: true, opacity: 0.30, side: THREE.DoubleSide, depthWrite: false })
+  );
+  scanPlane.rotation.x = -Math.PI / 2;
+  scanPlane.position.set(CAM_X, BELT_Y + 0.78, 0);
+  scanPlane.visible = false;
+  scene.add(scanPlane);
+
+  // 对射式光电触发开关（工件通过时触发拍照）
+  [1, -1].forEach(function (s) {
+    const sx = CAM_X + 1.00;
+    const sz = s * 0.98;
+    cyl(0.045, 0.045, 0.42, M.steel, sx, DECK_Y + 0.24, sz, gantry, 16);
+    box(0.13, 0.12, 0.13, M.bodyDark, sx, DECK_Y + 0.47, sz, gantry);
+    box(0.05, 0.05, 0.05, ledMat, sx, DECK_Y + 0.47, sz - s * 0.09, gantry);
+  });
+
+  // 图像处理机柜
+  box(0.82, 1.16, 0.60, M.bodyDark, CAM_X - 1.62, 0.58, -1.92, gantry);
+  box(0.88, 0.09, 0.66, M.body, CAM_X - 1.62, 1.20, -1.92, gantry);
+  box(0.58, 0.38, 0.03, M.screen, CAM_X - 1.62, 0.88, -1.60, gantry);
+  [0, 1, 2].forEach(function (k) {
+    const lm = [M.green, M.yellow, M.red][k];
+    box(0.07, 0.07, 0.03, lm, CAM_X - 1.86 + k * 0.20, 0.44, -1.60, gantry);
+  });
+
+  // 拍照闪光灯
+  const flashLight = new THREE.PointLight(0xbfe6ff, 0, 7, 2);
+  flashLight.position.set(CAM_X, CAM_LENS_Y - 0.25, 0);
+  scene.add(flashLight);
+
+  // 检测状态与拍照逻辑
+  let photoCount = 0;
+  let flashT = 0, scanT = 0, lastPhotoT = 0;
+
+  function triggerPhoto(now) {
+    photoCount++;
+    flashT = 0.34;
+    scanT = 0.60;
+    scanPlane.visible = true;
+
+    // 模拟视觉算法测量（含公差波动），约 6% 判定为超差
+    const dw = 0.800 + (Math.random() - 0.5) * 0.008;
+    const dd = 0.800 + (Math.random() - 0.5) * 0.008;
+    const dh = 0.087 + (Math.random() - 0.5) * 0.006;
+    const ng = Math.random() < 0.06;
+
+    $('vCount').textContent = photoCount;
+    $('vDim').textContent = (dw * 1000).toFixed(1) + ' × ' + (dd * 1000).toFixed(1) + ' mm';
+    $('vDome').textContent = (dh * 1000).toFixed(1) + ' mm';
+
+    if (lastPhotoT > 0) {
+      $('vRate').textContent = ((now - lastPhotoT) / 1000).toFixed(2) + ' s';
+    }
+    lastPhotoT = now;
+
+    const res = $('vResult');
+    res.classList.remove('vok', 'vng', 'vwait');
+    if (ng) { res.textContent = 'NG · 超差'; res.classList.add('vng'); }
+    else    { res.textContent = 'OK · 合格'; res.classList.add('vok'); }
+  }
+
+  /* ============================================================
+     8. 冲压件（板料 → 成型件）
+     ============================================================ */
+  const parts = [];          // 所有工件（用于统一回收清理）
+
+  function makePart() {
+    const g = new THREE.Group();
+
+    const base = new THREE.Mesh(new THREE.BoxGeometry(0.80, 0.12, 0.80), M.steel);
+    base.castShadow = true; base.receiveShadow = true;
+    g.add(base);
+
+    // 中心凸包（未成型时压平）
+    const dome = new THREE.Mesh(new THREE.CylinderGeometry(0.20, 0.26, 0.09, 24), M.machined);
+    dome.position.y = 0.06;
+    dome.scale.y = 0.001;
+    dome.castShadow = true; dome.receiveShadow = true;
+    g.add(dome);
+
+    // 加强筋
+    const ribs = [];
+    [0.25, -0.25].forEach(function (z) {
+      const r = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.05, 0.07), M.machined);
+      r.position.set(0, 0.06, z);
+      r.scale.y = 0.001;
+      r.castShadow = true; r.receiveShadow = true;
+      g.add(r);
+      ribs.push(r);
+    });
+
+    // 四角工艺孔
+    [[0.30, 0.30], [0.30, -0.30], [-0.30, 0.30], [-0.30, -0.30]].forEach(function (p) {
+      const h = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.13, 14), M.bodyDark);
+      h.position.set(p[0], 0, p[1]);
+      g.add(h);
+    });
+
+    g.userData.dome = dome;
+    g.userData.ribs = ribs;
+    return g;
+  }
+
+  // 成型进度 0→1：凸包与加强筋由压平状态逐级生长
+  function setForm(part, t) {
+    const s = Math.max(0.001, Math.min(1, t));
+    const d = part.userData;
+    d.dome.scale.y = s;
+    d.dome.position.y = 0.06 + 0.045 * s;
+    for (let i = 0; i < d.ribs.length; i++) {
+      d.ribs[i].scale.y = s;
+      d.ribs[i].position.y = 0.06 + 0.025 * s;
+    }
+  }
+
+  function spawnPart(x) {
+    const p = makePart();
+    p.position.set(x, PART_Y, 0);
+    scene.add(p);
+    parts.push(p);
+    return p;
+  }
+
+  /* ============================================================
+     9. 产线状态机
+     ============================================================ */
+  const PHASE = { IDLE: 'idle', FEED: 'feed', DOWN: 'down', HOLD: 'hold', UP: 'up', EJECT: 'eject' };
+  const PHASE_CN = { idle: '待料', feed: '进料', down: '冲压', hold: '保压', up: '回程', eject: '出料' };
+  const DUR = { feed: 1.00, down: 0.70, hold: 0.35, up: 0.55, eject: 1.10 };
+
+  const state = {
+    running: true,
+    speed: 1.0,
+    delivered: 0,
+    phase: PHASE.IDLE,
+    phaseT: 0,
+    slideY: SLIDE_MAX
+  };
+
+  const inQueue = [];        // 进料带上待加工板料（索引 0 为最前方）
+  const outItems = [];       // 出料带上已成型工件
+  let workpiece = null;      // 位于冲压工位的工件
+
+  function ease(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+  const clamp01 = t => Math.min(1, Math.max(0, t));
+
+  function pushIn(x) {
+    const p = spawnPart(x);
+    inQueue.push(p);
+    return p;
+  }
+
+  // 初始物料（索引 0 为队列最前方，位置沿输送方向依次递增）
+  pushIn(3.0);
+  pushIn(4.7);
+  pushIn(6.4);
+  pushIn(8.1);
+
+  const q0 = spawnPart(-4.0);
+  outItems.push(q0);
+  setForm(q0, 1);
+  const q1 = spawnPart(-7.5);
+  outItems.push(q1);
+  setForm(q1, 1);
+  const q2 = spawnPart(-11.0);
+  outItems.push(q2);
+  setForm(q2, 1);
+
+  /* ============================================================
+     10. 轨道相机
+     ============================================================ */
+  const cam = { theta: 0.92, phi: 1.13, r: 27.0, target: new THREE.Vector3(0, 1.60, 0) };
+  let rGoal = cam.r;
+  const targetGoal = cam.target.clone();
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+  function updateCamera() {
+    const sp = Math.sin(cam.phi), cp = Math.cos(cam.phi);
+    camera.position.set(
+      cam.target.x + cam.r * sp * Math.sin(cam.theta),
+      cam.target.y + cam.r * cp,
+      cam.target.z + cam.r * sp * Math.cos(cam.theta)
+    );
+    camera.lookAt(cam.target);
+  }
+  updateCamera();
+
+  let dragging = false, preX = 0, preY = 0;
+
+  canvas.addEventListener('pointerdown', function (e) {
+    dragging = true; preX = e.clientX; preY = e.clientY;
+    canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener('pointerup', function (e) {
+    dragging = false;
+    if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+  });
+  canvas.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    cam.theta -= (e.clientX - preX) * 0.0062;
+    cam.phi = clamp(cam.phi - (e.clientY - preY) * 0.005, 0.10, 1.52);
+    preX = e.clientX; preY = e.clientY;
+    updateCamera();
+  });
+  canvas.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    rGoal = clamp(rGoal * (1 + Math.sign(e.deltaY) * 0.085), 6, 70);
+  }, { passive: false });
+
+  canvas.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+
+  /* ============================================================
+     11. 主循环
+     ============================================================ */
+  const BASE_SPEED = 1.80;        // 输送线基准速度（单位 / 秒）
+  let lastT = performance.now();
+
+  function tick(now) {
+    requestAnimationFrame(tick);
+
+    const dt = Math.min((now - lastT) / 1000, 0.05);
+    lastT = now;
+
+    const ts = state.running ? state.speed : 0;      // 时间缩放
+    const v = ts * BASE_SPEED;                       // 皮带线速度
+
+    /* ---- 相机缓动 ---- */
+    const k = 1 - Math.pow(0.0025, dt);
+    cam.r += (rGoal - cam.r) * k;
+    cam.target.lerp(targetGoal, k);
+    updateCamera();
+
+    /* ---- 传送带运转 ---- */
+    if (v > 0) {
+      // 皮带纹理滚动（offset 增大 = 图案沿 -x 移动）
+      for (let i = 0; i < belts.length; i++) {
+        const b = belts[i];
+        b.texTop.offset.x = (b.texTop.offset.x + v / UNIT_U * dt) % 1;
+        b.texBot.offset.x = (b.texBot.offset.x - v / UNIT_U * dt + 1) % 1;
+
+        const omega = v / ROLL_R;
+        for (let j = 0; j < b.rollers.length; j++) {
+          b.rollers[j].rotation.z += omega * dt;     // 顶面线速度指向 -x
+        }
+      }
+    }
+
+    /* ---- 进料带：向左输送 + 逐级排队约束 ---- */
+    if (v > 0) {
+      for (let i = 0; i < inQueue.length; i++) {
+        const p = inQueue[i];
+        p.position.x -= v * dt;
+        // 队首停在上料位，后续工件与前一件保持最小间距（防止相互穿插）
+        const minX = (i === 0) ? QUEUE_X : inQueue[i - 1].position.x + GAP;
+        if (p.position.x < minX) p.position.x = minX;
+      }
+    }
+
+    /* ---- 出料带：向左输送 + 回收计数 ---- */
+    if (v > 0) {
+      for (let i = outItems.length - 1; i >= 0; i--) {
+        const p = outItems[i];
+        p.position.x -= v * dt;
+        if (p.position.x <= RECYCLE_X) {
+          scene.remove(p);
+          const idx = parts.indexOf(p);
+          if (idx >= 0) parts.splice(idx, 1);
+          outItems.splice(i, 1);
+          state.delivered++;
+          $('cnt').textContent = state.delivered;
+        }
+      }
+      // 低速运行时防止出料段工件相互穿插
+      for (let i = 1; i < outItems.length; i++) {
+        const maxX = outItems[i - 1].position.x - GAP;
+        if (outItems[i].position.x > maxX) outItems[i].position.x = maxX;
+      }
+    }
+
+    /* ---- 视觉检测站：工件跨越检测位即触发拍照 ---- */
+    for (let i = 0; i < outItems.length; i++) {
+      const p = outItems[i];
+      if (p.userData.prevX === undefined) p.userData.prevX = p.position.x;
+      if (v > 0 && p.userData.prevX > CAM_X && p.position.x <= CAM_X) triggerPhoto(now);
+      p.userData.prevX = p.position.x;
+    }
+
+    /* ---- 拍照闪光与扫描线特效 ---- */
+    if (flashT > 0) {
+      flashT = Math.max(0, flashT - dt);
+      const f = flashT / 0.34;
+      flashLight.intensity = 3.4 * f;
+      coneMat.opacity = 0.08 + 0.26 * f;
+      lensMat.emissiveIntensity = 0.6 + 3.2 * f;
+    } else {
+      flashLight.intensity = 0;
+      coneMat.opacity = 0.08;
+      lensMat.emissiveIntensity = 0.6;
+    }
+
+    if (scanT > 0) {
+      scanT = Math.max(0, scanT - dt);
+      const s = 1 - scanT / 0.60;
+      scanPlane.position.y = (BELT_Y + 0.78) - 0.78 * s;
+      scanPlane.material.opacity = 0.34 * (1 - s) + 0.05;
+      if (scanT <= 0) scanPlane.visible = false;
+    }
+
+    /* ---- 冲压工序状态机 ---- */
+    if (ts > 0) {
+      state.phaseT += dt * ts;
+    }
+
+    switch (state.phase) {
+
+      case PHASE.IDLE:
+        state.slideY = SLIDE_MAX;
+        if (ts > 0 && inQueue.length > 0 && inQueue[0].position.x <= QUEUE_X + 0.02) {
+          workpiece = inQueue.shift();
+          state.phase = PHASE.FEED;
+          state.phaseT = 0;
+        }
+        break;
+
+      case PHASE.FEED: {
+        const p = clamp01(state.phaseT / DUR.feed);
+        workpiece.position.x = QUEUE_X + (FORM_X - QUEUE_X) * ease(p);
+        if (p >= 1) { state.phase = PHASE.DOWN; state.phaseT = 0; }
+        break;
+      }
+
+      case PHASE.DOWN: {
+        const p = clamp01(state.phaseT / DUR.down);
+        const e = ease(p);
+        state.slideY = SLIDE_MAX + (SLIDE_MIN - SLIDE_MAX) * e;
+        // 后半程开始塑性成型
+        setForm(workpiece, clamp01((e - 0.55) / 0.45));
+        if (p >= 1) { state.phase = PHASE.HOLD; state.phaseT = 0; }
+        break;
+      }
+
+      case PHASE.HOLD:
+        state.slideY = SLIDE_MIN;
+        setForm(workpiece, 1);
+        if (state.phaseT >= DUR.hold) { state.phase = PHASE.UP; state.phaseT = 0; }
+        break;
+
+      case PHASE.UP: {
+        const p = clamp01(state.phaseT / DUR.up);
+        state.slideY = SLIDE_MIN + (SLIDE_MAX - SLIDE_MIN) * ease(p);
+        if (p >= 1) { state.phase = PHASE.EJECT; state.phaseT = 0; }
+        break;
+      }
+
+      case PHASE.EJECT: {
+        const p = clamp01(state.phaseT / DUR.eject);
+        workpiece.position.x = FORM_X + (EJECT_X - FORM_X) * ease(p);
+        if (p >= 1) {
+          outItems.unshift(workpiece);
+          workpiece = null;
+          state.phase = PHASE.IDLE;
+          state.phaseT = 0;
+        }
+        break;
+      }
+    }
+
+    /* ---- 滑块 / 活塞杆姿态 ---- */
+    slideGroup.position.y = state.slideY;
+    const rodBottom = state.slideY + SLIDE_TOP_FIX;
+    const len = Math.max(0.05, PISTON_TOP - rodBottom);
+    piston.scale.y = len;
+    piston.position.y = (PISTON_TOP + rodBottom) / 2;
+
+    /* ---- 飞轮：仅在冲压行程中转动 ---- */
+    if (ts > 0) {
+      const active = (state.phase === PHASE.DOWN || state.phase === PHASE.HOLD || state.phase === PHASE.UP);
+      flyGroup.rotation.z -= dt * ts * (active ? 5.5 : 1.3);
+    }
+
+    /* ---- 供料：维持进料带队列 ---- */
+    const pending = inQueue.length + (workpiece ? 1 : 0);
+    if (pending < 4) {
+      const lastX = inQueue.length ? inQueue[inQueue.length - 1].position.x : -999;
+      if (lastX < SPAWN_X - 1.9) pushIn(SPAWN_X);
+    }
+
+    /* ---- 界面同步 ---- */
+    $('phase').textContent = PHASE_CN[state.phase];
+    $('queue').textContent = inQueue.length;
+
+    renderer.render(scene, camera);
+  }
+  requestAnimationFrame(tick);
+
+  /* ============================================================
+     12. 界面交互
+     ============================================================ */
+  $('btnRun').addEventListener('click', function () {
+    state.running = !state.running;
+    this.classList.toggle('on', state.running);
+    this.textContent = state.running ? '⏸ 暂停产线' : '▶ 启动产线';
+  });
+
+  $('btnAdd').addEventListener('click', function () {
+    const lastX = inQueue.length ? inQueue[inQueue.length - 1].position.x : -999;
+    if (lastX > SPAWN_X - 1.9) return;      // 避免与入口工件重叠
+    pushIn(SPAWN_X);
+    $('queue').textContent = inQueue.length;
+  });
+
+  $('btnAll').addEventListener('click', function () {
+    targetGoal.set(0, 1.60, 0);
+    rGoal = 27.0;
+  });
+
+  $('btnPress').addEventListener('click', function () {
+    targetGoal.set(0, 2.40, 0);
+    rGoal = 10.5;
+  });
+
+  $('btnVision').addEventListener('click', function () {
+    targetGoal.set(CAM_X + 0.30, 2.05, 0);
+    rGoal = 7.6;
+  });
+
+  $('spd').addEventListener('input', function () {
+    state.speed = parseFloat(this.value);
+    $('spdVal').textContent = state.speed.toFixed(1) + '×';
+  });
+
+  /* ============================================================
+     13. 自适应
+     ============================================================ */
+  window.addEventListener('resize', function () {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  $('queue').textContent = inQueue.length;
+  $('cnt').textContent = state.delivered;
+})();
+</script>
+</body>
+</html>

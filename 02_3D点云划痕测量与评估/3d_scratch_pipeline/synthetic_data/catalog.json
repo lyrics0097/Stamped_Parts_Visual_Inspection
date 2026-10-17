@@ -1,0 +1,66 @@
+[
+  {
+    "file": "syn_01.npz",
+    "width_mm": 0.4,
+    "depth_mm": 0.08,
+    "length_mm": 18.0,
+    "noise_sigma_mm": 0.012,
+    "pitch_mm": 0.15
+  },
+  {
+    "file": "syn_02.npz",
+    "width_mm": 0.6,
+    "depth_mm": 0.12,
+    "length_mm": 22.0,
+    "noise_sigma_mm": 0.012,
+    "pitch_mm": 0.15
+  },
+  {
+    "file": "syn_03.npz",
+    "width_mm": 0.8,
+    "depth_mm": 0.2,
+    "length_mm": 28.0,
+    "noise_sigma_mm": 0.012,
+    "pitch_mm": 0.15
+  },
+  {
+    "file": "syn_04.npz",
+    "width_mm": 1.2,
+    "depth_mm": 0.35,
+    "length_mm": 32.0,
+    "noise_sigma_mm": 0.012,
+    "pitch_mm": 0.15
+  },
+  {
+    "file": "syn_05.npz",
+    "width_mm": 0.5,
+    "depth_mm": 0.06,
+    "length_mm": 16.0,
+    "noise_sigma_mm": 0.012,
+    "pitch_mm": 0.15
+  },
+  {
+    "file": "syn_06.npz",
+    "width_mm": 1.0,
+    "depth_mm": 0.18,
+    "length_mm": 24.0,
+    "noise_sigma_mm": 0.012,
+    "pitch_mm": 0.15
+  },
+  {
+    "file": "syn_07.npz",
+    "width_mm": 0.7,
+    "depth_mm": 0.45,
+    "length_mm": 20.0,
+    "noise_sigma_mm": 0.012,
+    "pitch_mm": 0.15
+  },
+  {
+    "file": "syn_08.npz",
+    "width_mm": 1.5,
+    "depth_mm": 0.25,
+    "length_mm": 36.0,
+    "noise_sigma_mm": 0.012,
+    "pitch_mm": 0.15
+  }
+]

@@ -1,0 +1,31 @@
+冲压件 3D 划痕公开数据检索结论
+================================
+
+目标: 带 3D 相机(结构光/线激光)的冲压件划痕, 且能验证宽度和深度。
+
+1) 已下载并用于本方案验证
+   IMT Mines Albi / CETIM / University of Montenegro
+   "Dataset of annotated 3D scans of surface defects on mechanical parts"
+   DOI: https://doi.org/10.57745/C4MSGW
+   许可: etalab 2.0
+   内容: 34 个 .npy 点云 (x,y,z,nx,ny,nz,label), 单位 mm;
+         29 条真实缺陷有参考深度 (0.20–3.5 mm);
+         另有 6 个 3D 打印仿真实缺陷(无深度真值)。
+   本地路径: 桌面\冲压件检测\datasets\imt_albi\
+   引用: Dosljak et al., 2026, Recherche Data Gouv, V1
+
+2) 网上能搜到、但不满足「冲压件划痕 + 宽深真值」
+   - Open Stamped Parts Dataset (OSPD): 冲压钣金, 但是 2D, 缺陷是缺孔
+     https://arxiv.org/html/2403.10369
+   - NEU-DET / NEU-CLS: 热轧带钢 2D 划痕, 无深度
+   - MVTec 3D-AD: 工业 3D 传感器, 类别是面包/轮胎等, 无划痕尺寸真值
+     https://www.mvtec.com/company/research/datasets
+   - Real-IAD D3: RGB+伪3D+点云, 工业件有划痕/凹坑, 但体积大且需申请, 无划痕宽深数值
+     https://realiad4ad.github.io/Real-IAD
+   - 汽车冲压结构光论文 P-NRPCA: 方法最贴近需求, 实验数据未公开
+   - Zenodo 车门合成缺陷: 主要是凸包/鼓包, 不是划痕宽深
+   - RoboCraftsman: 钣金成形仿真, 点距约 3 mm, 远粗于划痕
+
+3) 本方案另造的合成数据 (有宽/深/长真值)
+   桌面\冲压件检测\3d_scratch_pipeline\synthetic_data\
+   用途: 在公开数据缺宽度真值时, 定量验证测量公式本身是否正确。

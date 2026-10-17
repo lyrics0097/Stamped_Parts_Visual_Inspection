@@ -1,0 +1,6 @@
+﻿run_id,trigger,Z_m,depth_source,fx,mm_per_px,long_px,short_px,long_mm,short_mm,sam_score,folder
+20260926_204818,auto,0.8070,object_surface,643.08,1.25491,475.9,385.8,597.2,484.2,0.937,C:\Users\lyz\Desktop\冲压件检测\20260926_204818
+20260926_204853,auto,1.3340,object_surface,643.95,2.07159,217.6,193.1,450.7,400.1,0.590,C:\Users\lyz\Desktop\冲压件检测\20260926_204853
+20260926_205110,auto,1.4100,object_surface,644.48,2.18782,1003.3,369.4,2195.0,808.1,0.989,C:\Users\lyz\Desktop\冲压件检测\20260926_205110
+20260926_205128,auto,1.2670,object_surface,644.48,1.96594,736.4,128.4,1447.6,252.5,0.996,C:\Users\lyz\Desktop\冲压件检测\20260926_205128
+20260926_212001,auto,0.6411,object_depth_ransac_pca,41.0,644.65,0.99446,377.8,69.9,361.4,76.3,375.7,69.5,0.981,C:\Users\lyz\Desktop\冲压件检测\20260926_212001

@@ -1,8 +1,43 @@
 # 一种基于连续工件表观缺陷时空关联的冲压模具损伤在线预警方法及系统
 **(Stamped Parts Visual Inspection & Online Early Warning of Die Damage)**
 
-![系统整体场景](04_项目方案_标定板与概念设计/冲压件检测概念图/01_系统整体场景.png)
-![划痕测量与模具诊断](04_项目方案_标定板与概念设计/冲压件检测概念图/02_划痕测量与模具诊断.png)
+> 🚀 **【最新核心进展直达（无需登录可直接浏览/下载）】**
+> - 📂 **核心系统源码目录**：[`05_冲压模具损伤在线预警系统_DINOv3_SAM3/`](05_冲压模具损伤在线预警系统_DINOv3_SAM3/)
+> - 📄 **图文进度汇报 Word（面向专利与软著）**：[`冲压模具损伤在线预警项目_最新进度图文汇报_修订完善版.docx`](05_冲压模具损伤在线预警系统_DINOv3_SAM3/showcase_results/冲压模具损伤在线预警项目_最新进度图文汇报_修订完善版.docx)
+> - 🎬 **连续 36 冲次四分屏工业大屏实时预警演示视频**：[`08_佳能1080p连续36冲次四分屏预警演示视频.mp4`](05_冲压模具损伤在线预警系统_DINOv3_SAM3/showcase_results/08_佳能1080p连续36冲次四分屏预警演示视频.mp4)
+> - 📝 **新数据集推进总览与组会讲稿**：[`09_新数据推进成果总览与组会汇报讲稿.md`](05_冲压模具损伤在线预警系统_DINOv3_SAM3/showcase_results/09_新数据推进成果总览与组会汇报讲稿.md)
+
+---
+
+## 🖥️ 最新核心成果预览（四分屏工业监控大屏 · DINOv3+SAM3 拉毛分割 · 时空关联三级预警）
+
+### 1. 四分屏工业监控大屏单帧详解与四阶段递进式报警全景（软件著作权核心界面）
+![一图看懂监控大屏指南](05_冲压模具损伤在线预警系统_DINOv3_SAM3/showcase_results/00_一图看懂监控大屏指南.png)
+![监控大屏四阶段状态全览](05_冲压模具损伤在线预警系统_DINOv3_SAM3/showcase_results/02_监控大屏四阶段状态全览.png)
+![右下角折线图深度拆解](05_冲压模具损伤在线预警系统_DINOv3_SAM3/showcase_results/05_右下角折线图深度拆解.png)
+
+### 2. 厂里 4K（1200万像素）检具点位绑定、7号件真实立壁拉毛 DINOv3+SAM3 分割与四阶段算法消融（发明专利核心支撑）
+![4K超清检具点位映射与7号件真实拉毛分割](05_冲压模具损伤在线预警系统_DINOv3_SAM3/showcase_results/07_4K超清检具点位映射与7号件真实拉毛DINOv3_SAM分割.png)
+![DINOv3_SAM3与Zotero四篇论文算法升级消融对比](05_冲压模具损伤在线预警系统_DINOv3_SAM3/showcase_results/10_DINOv3_SAM3与Zotero四篇论文算法升级消融对比.png)
+
+### 3. 厂里新采集三大相机 69 件连续过线工件节拍与抗反光评测
+![新采集三大相机69件过线视频画质与抗反光评测](05_冲压模具损伤在线预警系统_DINOv3_SAM3/showcase_results/06_新采集三大相机69件过线视频画质与抗反光评测.png)
+
+---
+
+## 🧩 核心代码模块一览 (`05_冲压模具损伤在线预警系统_DINOv3_SAM3/`)
+
+| 源码文件 | 模块功能说明 |
+| :--- | :--- |
+| [`stamping_die_warning_system.py`](05_冲压模具损伤在线预警系统_DINOv3_SAM3/stamping_die_warning_system.py) | **全流程四分屏工业 HMI 在线预警主系统**：集成过线触发、3D平面位姿解算、抗反光划痕检测、12×12 模具风险网格与四级声光报警渲染 |
+| [`step1_prod_line_extractor.py`](05_冲压模具损伤在线预警系统_DINOv3_SAM3/step1_prod_line_extractor.py) | **模块一**：传送带运动冲压件过线自动触发、SAM 背景屏蔽抠图与 12×12 模具规范化平面逆透视配准 |
+| [`step2_scratch_and_memory_bank.py`](05_冲压模具损伤在线预警系统_DINOv3_SAM3/step2_scratch_and_memory_bank.py) | **模块二**：同态感知去反光编码（POE）+ `DINOv3 (ViT-B/16)` 空间锚定局部记忆库 + `SAM3/SAM` 微弱拉毛分割与测地线骨架长宽测量 |
+| [`step3_spatiotemporal_warning.py`](05_冲压模具损伤在线预警系统_DINOv3_SAM3/step3_spatiotemporal_warning.py) | **模块三**：跨冲次时空关联张量、位置重现率 $R_k$（自动滤除偶发磕碰）与条件激活增长斜率 $\beta_L$ 双指标三级递进预警引擎 |
+| [`run_d455_hil_verification.py`](05_冲压模具损伤在线预警系统_DINOv3_SAM3/run_d455_hil_verification.py) | **模块四**：RealSense D455 硬件在环（HIL）三维倾斜反投影验证与 200 次连续在线运行延迟/零内存泄漏压测 |
+| [`run_step5_new_dataset_upgrade.py`](05_冲压模具损伤在线预警系统_DINOv3_SAM3/run_step5_new_dataset_upgrade.py) | **模块五**：新采集三大相机 69 件连续过线工件评测、4K 检具点位映射与佳能 1080p 连续 36 冲次四分屏预警视频生成 |
+| [`run_step6_dinov3_sam3_zotero_upgrade.py`](05_冲压模具损伤在线预警系统_DINOv3_SAM3/run_step6_dinov3_sam3_zotero_upgrade.py) | **模块六**：真品 `DINOv3 (lvd1689m)` + `SAM3` 与 `P³-SAM` / `SnakeSAM` 路径场连续提示及拓扑断裂桥接四阶段消融实验 |
+| [`hikrobot_mvs_live_stream.py`](05_冲压模具损伤在线预警系统_DINOv3_SAM3/hikrobot_mvs_live_stream.py) | **工业相机驱动接口**：海康机器人 `MV-CS050-60GM`（500万全局快门黑白）+ `FA1223D5`（12mm镜头）MVS SDK 实时取流与抗反光配置模块 |
+
 
 ---
 

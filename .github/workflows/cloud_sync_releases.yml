@@ -6,9 +6,6 @@ on:
       src_token:
         description: "Token for cross-repo cloud transfer"
         required: true
-      ms_token:
-        description: "Token for ModelScope cloud transfer"
-        required: false
 
 permissions:
   contents: write
@@ -21,9 +18,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SRC_TOKEN: ${{ github.event.inputs.src_token }}
-          MS_TOKEN: ${{ github.event.inputs.ms_token }}
           TARGET_REPO: ${{ github.repository }}
-          SOURCE_REPO: "lyrics0097/--------"
+          SOURCE_REPO: "lyrics0097/Edge_Computing_Gimbal"
         run: |
           set -e
           echo "=== 1. Ensuring Target Releases Exist on $TARGET_REPO ==="
